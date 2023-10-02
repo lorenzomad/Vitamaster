@@ -5,6 +5,6 @@ type RootStackParamList = {
     Profile: undefined;
 };
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Profile', 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Profile' | 'Home'>;
 
 export {RootStackParamList, Props}
