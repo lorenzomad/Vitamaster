@@ -1,5 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './components/HomeScreen';
@@ -22,6 +20,4 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
-
-;
+};

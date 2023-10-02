@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import { Props } from '../types/types';
 
  const HomeScreen = ({navigation}: Props) => {
