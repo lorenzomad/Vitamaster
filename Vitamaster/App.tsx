@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './components/HomeScreen';
 import ProfileScreen from './components/ProfileScreen';
 import { RootStackParamList } from './types/types';
+import { openDB } from './func/logging';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>()

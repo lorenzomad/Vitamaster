@@ -7,4 +7,9 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile' | 'Home'>;
 
-export {RootStackParamList, Props}
+interface FileRead {
+    exists: boolean,
+    fileContent: string
+}
+
+export {RootStackParamList, Props, FileRead}
