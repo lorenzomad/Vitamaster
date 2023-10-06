@@ -5,7 +5,7 @@ import React, { useState , useEffect} from 'react';
 import { SQLiteDatabase } from 'expo-sqlite';
 
 
-
+const tableName: string = 'logs'
 const dbName: string = 'logging'
 
 let db: SQLiteDatabase 
@@ -19,7 +19,7 @@ const ProfileScreen = ({navigation}: Props) => {
 
     const  startDb = async () => {
       db = openDB(dbName)
-      createTable(db);    
+      createTable(db, tableName);    
     }
 
     startDb()
@@ -30,12 +30,12 @@ const ProfileScreen = ({navigation}: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text> This is the profile page</Text>
-      <Button title='log date' onPress={() => logDay(new Date(), db)}/>
+      <Button title='log date' onPress={() => logDay(new Date(), db, tableName)}/>
       <Button title='read logs' onPress={ async () => {
-        await readLogs(db, setDates)
+        await readLogs(db, tableName, setDates)
         console.log(dates)
       }}/>
-      <Button title='delete logs' onPress={() => deleteTable(db)}/>
+      <Button title='delete logs' onPress={() => deleteTable(db, tableName)}/>
       {dates != null ? 
         <FlatList key={0}
           data={dates}
