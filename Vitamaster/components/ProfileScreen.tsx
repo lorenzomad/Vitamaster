@@ -1,57 +1,56 @@
-import { StyleSheet, Text, View, Button} from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, SafeAreaView} from 'react-native';
 import { Props } from '../types/types';
-import { logDay, readLogs, openDB } from '../func/logging';
+import { logDay, readLogs, openDB, createTable, deleteTable } from '../func/logging';
 import React, { useState , useEffect} from 'react';
-import { Database } from 'expo-sqlite';
-import { Logs } from 'expo';
-  
+import { SQLiteDatabase } from 'expo-sqlite';
+
+
 
 const dbName: string = 'logging'
 
-const db: Database = openDB(dbName)
+let db: SQLiteDatabase 
 
 const ProfileScreen = ({navigation}: Props) => {
   // logging screen of the app
-  const [log, setLog] = useState <string [] | null>()
+  const [dates, setDates] = useState <any[]> ()
 
 
   useEffect (() => {
-    db.transaction(
-      (tx) => {
-          tx.executeSql(
-              'CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY NOT NULL, date TEXT, done INT);', 
-              [], 
-              () => {console.log('table created')}
-              )
-      }
-    )
 
-    setLog(readLogs(db))
-    console.log(log)
+    const  startDb = async () => {
+      db = openDB(dbName)
+      createTable(db);    
+    }
 
+    startDb()
+    
+    // return () => {closeDB(db)}
   }, [])
-
-  let logList: React.JSX.Element[] | undefined = undefined
-
-
-  if (log != null){
-    logList = log.map(date => {
-      return <li><Text>{date}</Text></li>
-    })
-  }
-
+  
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text> This is the profile page</Text>
       <Button title='log date' onPress={() => logDay(new Date(), db)}/>
-      {logList ? <ul>{logList}</ul> : <Text>no logs</Text>}
+      <Button title='read logs' onPress={ async () => {
+        await readLogs(db, setDates)
+        console.log(dates)
+      }}/>
+      <Button title='delete logs' onPress={() => deleteTable(db)}/>
+      {dates != null ? 
+        <FlatList key={0}
+          data={dates}
+          renderItem={({item}) => <Text>{JSON.stringify(item.date)}</Text>}
+          keyExtractor={(item) => item.id}
+        /> 
+      : 
+        <Text>no logs</Text>
+      }
       <Button title='Go home' onPress={
         () => {
           navigation.navigate("Home")
         }
       }/>
-    </View>
-    
+    </SafeAreaView>
   );
 }
 
