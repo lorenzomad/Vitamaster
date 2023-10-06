@@ -1,5 +1,4 @@
 import * as SQLite from 'expo-sqlite'
-import { Dispatch, FunctionComponent, SetStateAction } from 'react'
 
 //this module provides the functions to 
 // connect to teh db,
@@ -15,11 +14,13 @@ const openDB = (name: string) : SQLite.SQLiteDatabase => {
 }
 
 const closeDB = (db:SQLite.SQLiteDatabase) => {
+    // closes connection to given db
     db.closeAsync();
     console.log('connection closed')
 }
 
 const deleteTable = (db:SQLite.SQLiteDatabase) => {
+    // deletes ALL ITEMS from teh table
     db.transaction(
         tx => {
             tx.executeSql('DELETE FROM logs;')
@@ -28,6 +29,7 @@ const deleteTable = (db:SQLite.SQLiteDatabase) => {
 } 
 
 const createTable = (db: SQLite.SQLiteDatabase): void => {
+    // creates the table if it does not exist
     db.transaction(
         (tx) => {
             tx.executeSql(
@@ -59,8 +61,8 @@ const logDay = (date: Date, db: SQLite.SQLiteDatabase ): void => {
     )          
 }
 
-const readLogs = async (db: SQLite.SQLiteDatabase, setFunction) => {
-    //reads the content of a file 
+const readLogs = async (db: SQLite.SQLiteDatabase, setFunction: React.Dispatch<React.SetStateAction<any[] | undefined>>) => {
+    //reads the content of the table and assigns to the function setFunction
 
     console.log('reading db')
     db.transactionAsync(
