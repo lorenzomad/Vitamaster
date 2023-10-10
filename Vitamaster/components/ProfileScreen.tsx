@@ -35,6 +35,7 @@ const ProfileScreen = ({navigation}: Props) => {
     <SafeAreaView style={styles.container}>
       <Text> This is the profile page</Text>
       <Button title='log date' onPress={() => logDay(new Date(), db, tableName)}/>
+      <Button title='log yesterday' onPress={() => logDay(new Date('2023-10-09'), db, tableName)}/>
       <Button title='read logs' onPress={ async () => {
         await readLogs(db, tableName, setDates)
         console.log(dates)
