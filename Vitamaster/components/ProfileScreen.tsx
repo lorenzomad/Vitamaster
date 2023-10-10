@@ -1,6 +1,10 @@
 import { StyleSheet, Text, View, Button, FlatList, SafeAreaView} from 'react-native';
 import { Props } from '../types/types';
-import { logDay, readLogs, openDB, createTable, deleteTable } from '../func/logging';
+import { readLogs } from '../func/readLogs';
+import { logDay } from '../func/logDay';
+import { createTable } from '../func/createTable';
+import { deleteTable } from '../func/deleteTable';
+import { openDB } from '../func/openDB';
 import React, { useState , useEffect} from 'react';
 import { SQLiteDatabase } from 'expo-sqlite';
 
