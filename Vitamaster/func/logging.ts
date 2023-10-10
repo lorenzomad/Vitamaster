@@ -19,21 +19,21 @@ const closeDB = (db:SQLite.SQLiteDatabase) => {
     console.log('connection closed')
 }
 
-const deleteTable = (db:SQLite.SQLiteDatabase, tableName: string) => {
+const deleteTable = (db:SQLite.SQLiteDatabase, loggingTable: string) => {
     // deletes ALL ITEMS from teh table
     db.transaction(
         tx => {
-            tx.executeSql(`DELETE FROM ${tableName};`)
+            tx.executeSql(`DELETE FROM ${loggingTable};`)
         }
     )
 } 
 
-const createTable = (db: SQLite.SQLiteDatabase, tableName: string): void => {
+const createTable = (db: SQLite.SQLiteDatabase, loggingTable: string): void => {
     // creates the table if it does not exist
     db.transaction(
         (tx) => {
             tx.executeSql(
-                `CREATE TABLE IF NOT EXISTS ${tableName} (id INTEGER PRIMARY KEY NOT NULL, date TEXT, done INT);`
+                `CREATE TABLE IF NOT EXISTS ${loggingTable} (id INTEGER PRIMARY KEY NOT NULL, date TEXT, done INT);`
                 )
         },
         () => { console.log(' table creation failed')},
@@ -42,32 +42,77 @@ const createTable = (db: SQLite.SQLiteDatabase, tableName: string): void => {
 }
 
 
-const logDay = (date: Date, db: SQLite.SQLiteDatabase, tableName: string): void => {
+const logDay = async (date: Date, db: SQLite.SQLiteDatabase, loggingTable: string): void => {
     //logs the provided date to the database
-    const dateString: string = date.toString()
+
+    const day: number = date.getDate()
+    const month: number = date.getMonth()
+    const year: number = date.getFullYear()
+
+    const dateString: string = `${day}/${month}/${year}`
     
     console.log('logging date')
     
-    db.transaction(
-        (tx) => {
-            tx.executeSql(`INSERT INTO ${tableName} (date, done) values (?, 1);`, [dateString]);
-            tx.executeSql(`SELECT * FROM ${tableName};`, [], (_, rows) => {
-                console.log(JSON.stringify(rows))
-            })
+    let result : any[] = []
 
-        }, 
-        ()=> { console.log('logging error')},
-        () => {  console.log('date logged')}
-    )          
+    await db.transactionAsync(
+        async tx =>{
+            result = (await tx.executeSqlAsync(`SELECT * FROM ${loggingTable};`, [])).rows
+        } 
+    )
+
+    if (result != null) {
+        console.log(`result is ${result}`)
+        
+    } else {
+        db.transaction(
+            (tx) => {
+                tx.executeSql(`INSERT INTO ${loggingTable} (date, done) values (?, 1);`, [dateString]);
+                
+                tx.executeSql(`SELECT * FROM ${loggingTable};`, [], (_, rows) => {
+                    console.log(JSON.stringify(rows))
+                })
+    
+            }, 
+            ()=> { console.log('logging error')},
+            () => {  console.log('date logged')}
+            
+        )   
+        return 
+    }
+
+    let loggedDates: string[] = []
+    result.forEach(element => {
+        loggedDates.push(element.date)
+    });
+    console.log(`logged dates is ${loggedDates}`)
+
+    
+    if(!loggedDates.includes(dateString)) {
+        db.transaction(
+            (tx) => {
+                tx.executeSql(`INSERT INTO ${loggingTable} (date, done) values (?, 1);`, [dateString]);
+                
+                tx.executeSql(`SELECT * FROM ${loggingTable};`, [], (_, rows) => {
+                    console.log(JSON.stringify(rows))
+                })
+    
+            }, 
+            ()=> { console.log('logging error')},
+            () => {  console.log('date logged')}
+        )   
+    }
+    
+           
 }
 
-const readLogs = async (db: SQLite.SQLiteDatabase, tableName: string, setFunction: React.Dispatch<React.SetStateAction<any[] | undefined>>) => {
+const readLogs = async (db: SQLite.SQLiteDatabase, loggingTable: string, setFunction: React.Dispatch<React.SetStateAction<any[] | undefined>>) => {
     //reads the content of the table and assigns to the function setFunction
 
     console.log('reading db')
     db.transactionAsync(
         async (tx) => {
-            const result = await tx.executeSqlAsync(`SELECT * FROM ${tableName};`, [])
+            const result = await tx.executeSqlAsync(`SELECT * FROM ${loggingTable};`, [])
             setFunction(result.rows)
         }   
     )
