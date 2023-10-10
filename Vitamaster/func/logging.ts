@@ -42,7 +42,7 @@ const createTable = (db: SQLite.SQLiteDatabase, loggingTable: string): void => {
 }
 
 
-const logDay = async (date: Date, db: SQLite.SQLiteDatabase, loggingTable: string): void => {
+const logDay = async (date: Date, db: SQLite.SQLiteDatabase, loggingTable: string): Promise<void> => {
     //logs the provided date to the database
 
     const day: number = date.getDate()
